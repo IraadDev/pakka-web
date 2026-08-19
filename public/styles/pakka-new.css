@@ -364,3 +364,60 @@ ul.clean li { margin-bottom: 6px; }
    with the same values. */
 .nm  { font-family: var(--f-display); font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; }
 .sub { font-family: var(--f-mono); font-size: 10.5px; color: var(--text-3); letter-spacing: .04em; }
+
+.pd-wrap { padding: 26px 0 90px; }
+.pd-crumbs { display: flex; align-items: center; gap: 9px; font-family: var(--f-mono); font-size: 11px; letter-spacing: .06em; color: var(--text-3); padding-bottom: 20px; }
+.pd-crumbs a:hover { color: var(--text); }
+.pd-crumbs .sep { opacity: .5; }
+.pd-top { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 34px; align-items: start; }
+.pd-media { border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); overflow: hidden; position: relative; }
+.pd-stage { aspect-ratio: 1; display: grid; place-items: center; color: var(--text-3); background: var(--surface-2); position: relative; }
+.pd-stage .pl-ph { width: 100%; height: 100%; }
+.pd-badges { position: absolute; top: 13px; left: 13px; z-index: 3; display: flex; flex-direction: column; gap: 6px; align-items: flex-start; }
+.pd-thumbs { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); }
+.pd-thumb { width: 58px; height: 58px; border-radius: var(--r-sm); border: 1px solid var(--border); background: var(--surface-2); display: grid; place-items: center; color: var(--text-3); cursor: pointer; transition: border-color .15s, color .15s; }
+.pd-thumb:hover { border-color: var(--border-2); color: var(--text-2); }
+.pd-thumb.is-active { border-color: var(--accent); color: var(--accent-text); }
+.pd-buy { border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); padding: 20px; position: sticky; top: 78px; display: flex; flex-direction: column; gap: 15px; }
+.pd-price { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.pd-price .now { font-family: var(--f-display); font-weight: 500; font-size: 33px; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.pd-price .mrp { font-family: var(--f-mono); font-size: 13px; color: var(--text-3); text-decoration: line-through; }
+.pd-price .off { font-family: var(--f-mono); font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: var(--r-xs); background: var(--accent); color: var(--on-accent); }
+.pd-editions { display: flex; flex-direction: column; gap: 7px; }
+.pd-bar { height: 4px; border-radius: var(--r-pill); background: var(--surface-3); overflow: hidden; }
+.pd-bar i { display: block; height: 100%; background: var(--accent); }
+.pd-buy-actions { display: flex; flex-direction: column; gap: 8px; }
+.pd-trust { display: flex; flex-direction: column; gap: 9px; padding-top: 14px; border-top: 1px solid var(--border); }
+.pd-trust-row { display: flex; align-items: center; gap: 9px; font-family: var(--f-mono); font-size: 11px; letter-spacing: .04em; color: var(--text-2); }
+.pd-trust-row svg { color: var(--accent-text); flex: none; }
+.pd-id { padding: 26px 0 22px; display: flex; flex-direction: column; gap: 11px; }
+.pd-title { font-family: var(--f-display); font-weight: 600; font-size: 29px; letter-spacing: -.015em; line-height: 1.12; margin: 0; }
+.pd-sub { display: flex; align-items: center; gap: 13px; flex-wrap: wrap; font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .05em; color: var(--text-3); }
+.pd-sub .dot { width: 3px; height: 3px; border-radius: 50%; background: var(--border-strong); }
+.pd-seller { display: flex; align-items: center; gap: 13px; border: 1px solid var(--border); border-radius: var(--r-md); background: var(--surface); padding: 14px 16px; }
+.pd-seller-meta { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.pd-seller-name { font-family: var(--f-display); font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 7px; }
+.pd-seller-sub { font-family: var(--f-mono); font-size: 10.5px; color: var(--text-3); letter-spacing: .05em; }
+.pd-seller .acts { margin-left: auto; display: flex; gap: 8px; }
+.pd-sec { padding-top: 34px; }
+.pd-sec-cap { font-family: var(--f-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-3); padding-bottom: 13px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.pd-spec { display: grid; grid-template-columns: 168px minmax(0,1fr); gap: 0 20px; }
+.pd-spec dt { font-family: var(--f-mono); font-size: 11.5px; letter-spacing: .05em; color: var(--text-3); padding: 11px 0; border-bottom: 1px solid var(--border); }
+.pd-spec dd { margin: 0; font-size: 13.5px; color: var(--text); padding: 11px 0; border-bottom: 1px solid var(--border); }
+.pd-desc { font-size: 14.5px; line-height: 1.65; color: var(--text-2); }
+.pd-desc p { margin: 0 0 13px; }
+.pd-prov { display: flex; flex-direction: column; }
+.pd-prov-row { display: grid; grid-template-columns: 15px minmax(0,1fr) auto; gap: 14px; align-items: start; padding: 13px 0; border-bottom: 1px solid var(--border); }
+.pd-prov-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--surface-3); border: 1px solid var(--border-2); margin-top: 4px; }
+.pd-prov-row.is-now .pd-prov-dot { background: var(--accent); border-color: var(--accent); }
+.pd-prov-what { font-size: 13.5px; color: var(--text); }
+.pd-prov-who { font-family: var(--f-mono); font-size: 10.5px; color: var(--text-3); letter-spacing: .05em; margin-top: 2px; }
+.pd-prov-when { font-family: var(--f-mono); font-size: 10.5px; color: var(--text-3); letter-spacing: .05em; white-space: nowrap; }
+.pd-rel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 900px) { .pd-top { grid-template-columns: 1fr; } }
+@media (max-width: 620px) { .pd-spec { grid-template-columns: 1fr; gap: 0; } .pd-spec dt { border-bottom: 0; padding-bottom: 2px; }
+@media (max-width: 720px) { .pd-rel { grid-template-columns: 1fr 1fr; } }
+
+/* A colour swatch inside a pill — the DS defines .sw only within
+   .pl-sellcard-media .cat, but the same dot reads correctly on any badge. */
+.pl-pill .sw { display: inline-block; width: 6px; height: 6px; border-radius: 2px; margin-right: 5px; vertical-align: middle; }

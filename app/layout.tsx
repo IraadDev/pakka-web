@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { SessionProvider } from "@/lib/session";
 import { Shell } from "@/components/shell";
+import { THEME_SCRIPT } from "@/lib/theme";
 
 export const metadata: Metadata = {
   title: "PAKKA — Verified second-hand, protected payments",
@@ -20,8 +21,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" data-theme="dark">
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
       <head>
+        {/* Applies the stored theme before first paint — without it the page
+            renders dark and then flips. Same storage key as the DS. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {/* Design system, loaded verbatim. Do not edit these in this repo —
             they are copied from the design-system project. */}
         <link rel="stylesheet" href="/styles/pinlink.css" />

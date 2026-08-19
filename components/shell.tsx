@@ -1,8 +1,9 @@
 "use client";
 
 /**
- * App shell — top bar and navigation. Uses the design system's fh-shell
- * classes, so it matches every other surface without new styling.
+ * App shell — the design system's sticky topbar, matched to the markup every
+ * DS page uses: brand mark + wordmark, .fh-nav underline links, icon buttons,
+ * theme toggle, avatar.
  *
  * Badge counts come from /notifications/summary and then update live over the
  * inbox stream, so an unread count is never stale while the tab is open.
@@ -12,20 +13,22 @@ import { usePathname } from "next/navigation";
 import * as React from "react";
 import { api } from "@/lib/api";
 import { useSession } from "@/lib/session";
+import { useTheme } from "@/lib/theme";
 import { useInboxStream } from "@/lib/realtime";
 import type { Summary } from "@/lib/types";
-import { Avatar, cx } from "./ui";
+import { Icon, Logo } from "./icon";
+import { cx } from "./ui";
 
 const NAV = [
-  { href: "/", label: "Browse" },
+  { href: "/", label: "Market" },
   { href: "/wanted", label: "Wanted" },
-  { href: "/messages", label: "Messages", badge: "unread_messages" as const },
   { href: "/deals", label: "Deals", badge: "active_deals" as const },
   { href: "/sell", label: "Sell" },
 ];
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const { user, signOut } = useSession();
+  const { theme, toggle } = useTheme();
   const pathname = usePathname();
   const [summary, setSummary] = React.useState<Summary | null>(null);
 
@@ -49,6 +52,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
     }, [load]),
   );
 
+  const unread = summary?.unread_messages ?? 0;
+
   return (
     // Not .pl-shell: that applies its own max-width and padding, which would
     // constrain and double-pad the page width tier nested inside it. Each page
@@ -56,16 +61,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
     <div>
       <header className="fh-top">
         <div className="fh-top-inner">
-          <Link href="/" className="pl-brand" aria-label="PAKKA home">
+          <Link className="pl-brand" href="/" aria-label="PAKKA home">
+            <Logo />
             <span className="pl-wordmark">PAKKA</span>
           </Link>
 
+          {/* .fh-nav is the DS's underline nav — .pl-navpill is a different
+              component used for in-page filters, not the topbar. */}
           <nav className="fh-nav" aria-label="Main">
             {NAV.map((n) => {
               const active = n.href === "/" ? pathname === "/" : pathname.startsWith(n.href);
               const count = n.badge && summary ? summary[n.badge] : 0;
               return (
-                <Link key={n.href} href={n.href} className={cx("pl-navpill", active && "is-active")}>
+                <Link key={n.href} href={n.href} className={cx(active && "is-active")}>
                   {n.label}
                   {count > 0 && <span className="cntpill">{count}</span>}
                 </Link>
@@ -76,14 +84,36 @@ export function Shell({ children }: { children: React.ReactNode }) {
           <div className="fh-top-right">
             {user ? (
               <>
-                <Link href="/saved" className="fh-top-ic" aria-label="Saved">♡</Link>
-                <Link href="/settings" className="fh-top-ava" aria-label="Settings">
-                  <Avatar name={user.name} />
+                <Link className="fh-top-ic" href="/saved" aria-label="Saved">
+                  <Icon name="heart" size={16} />
                 </Link>
-                <button className="pl-btn pl-btn-ghost pl-btn-sm" onClick={signOut}>Sign out</button>
+                <Link className="fh-top-ic" href="/messages" aria-label="Messages">
+                  <Icon name="contact" size={16} />
+                  {unread > 0 && <span className="ping" />}
+                </Link>
+                <button
+                  className={cx("pl-toggle", theme === "dark" && "is-on")}
+                  onClick={toggle}
+                  aria-label="Toggle theme"
+                  aria-pressed={theme === "dark"}
+                />
+                <Link className="fh-top-ava" href="/settings" aria-label="Settings">
+                  {initials(user.name)}
+                </Link>
+                <button className="pl-btn pl-btn-ghost pl-btn-sm" onClick={signOut}>
+                  Sign out
+                </button>
               </>
             ) : (
-              <Link href="/login" className="pl-btn pl-btn-primary pl-btn-sm">Sign in</Link>
+              <>
+                <button
+                  className={cx("pl-toggle", theme === "dark" && "is-on")}
+                  onClick={toggle}
+                  aria-label="Toggle theme"
+                  aria-pressed={theme === "dark"}
+                />
+                <Link href="/login" className="pl-btn pl-btn-primary pl-btn-sm">Sign in</Link>
+              </>
             )}
           </div>
         </div>
@@ -92,6 +122,12 @@ export function Shell({ children }: { children: React.ReactNode }) {
       {children}
     </div>
   );
+}
+
+function initials(name?: string | null): string {
+  return (name ?? "?")
+    .split(/\s+/).filter(Boolean).slice(0, 2)
+    .map((w) => w[0]).join("").toUpperCase() || "?";
 }
 
 /**
@@ -104,6 +140,7 @@ export function VerifyPrompt({ action = "do this" }: { action?: string }) {
 
   return (
     <div className="pl-banner is-warn">
+      <span className="ic"><Icon name="info" size={16} /></span>
       <span>
         Verify your identity to {action}. It takes about a minute and uses your
         Aadhaar via DigiLocker.

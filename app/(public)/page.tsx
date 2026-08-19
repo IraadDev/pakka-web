@@ -116,7 +116,14 @@ function HomePageInner() {
         </Empty>
       ) : (
         <div className="pl-masonry">
-          {listings.map((l) => <ListingCard key={l.id} listing={l} onToggleSave={() => {}} />)}
+          {listings.map((l) => (
+            <ListingCard
+              key={l.id}
+              listing={l}
+              category={categories.find((c) => c.id === l.category_id)}
+              onToggleSave={() => {}}
+            />
+          ))}
         </div>
       )}
     </Page>

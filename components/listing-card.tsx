@@ -7,8 +7,9 @@
 import Link from "next/link";
 import * as React from "react";
 import { api, inrShort, ago, listingStatusClass, listingStatusLabel } from "@/lib/api";
-import type { Listing } from "@/lib/types";
+import type { Category, Listing } from "@/lib/types";
 import { Avatar, Verified, cx } from "./ui";
+import { Icon } from "./icon";
 
 /**
  * Height for a photoless card's placeholder.
@@ -27,12 +28,17 @@ function placeholderHeight(id: string): number {
 }
 
 export function ListingCard({
-  listing, saved, onToggleSave,
+  listing, saved, onToggleSave, category,
 }: {
   listing: Listing;
   saved?: boolean;
   onToggleSave?: (id: string, next: boolean) => void;
+  /** Colour and label come from the server so a new category needs no code. */
+  category?: Category;
 }) {
+  const categoryColour = category?.colour ?? "var(--accent)";
+  const categoryLabel = category?.label ?? listing.category_id.replace(/_/g, " ");
+
   // `override` holds an optimistic value only while a toggle is in flight;
   // otherwise the prop is the truth. Deriving beats mirroring the prop into
   // state and re-syncing it in an effect.
@@ -66,10 +72,14 @@ export function ListingCard({
       <div className="pl-sellcard-media">
         {cover
           ? <img src={cover} alt="" loading="lazy" />
-          : <div className="pl-ph" style={{ height: placeholderHeight(listing.id) }} aria-hidden />}
+          : (
+            <div className="pl-ph" style={{ height: placeholderHeight(listing.id) }} aria-hidden>
+              <Icon name="box" size={30} />
+            </div>
+          )}
         <span className="cat">
-          <span className="sw" style={{ background: `var(--cat, var(--accent))` }} aria-hidden />
-          {listing.category_id.replace(/_/g, " ")}
+          <span className="sw" style={{ background: categoryColour }} aria-hidden />
+          {categoryLabel}
         </span>
         {onToggleSave && (
           <button
@@ -78,7 +88,7 @@ export function ListingCard({
             aria-pressed={isSaved}
             aria-label={isSaved ? "Remove from saved" : "Save this listing"}
           >
-            {isSaved ? "♥" : "♡"}
+            <Icon name="heart" size={14} />
           </button>
         )}
       </div>
@@ -109,7 +119,7 @@ export function ListingRow({ listing, href }: { listing: Listing; href?: string 
       <div className="pl-sellrow-thumb">
         {cover
           ? <img src={cover} alt="" loading="lazy" />
-          : <div className="pl-ph" aria-hidden />}
+          : <div className="pl-ph" aria-hidden><Icon name="box" size={20} /></div>}
       </div>
 
       <div className="pl-sellrow-main">

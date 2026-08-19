@@ -3,21 +3,23 @@
 /**
  * Product detail (route /i/[id]).
  *
- * This screen does one job: let a buyer decide whether to trust the item and
- * the person. Verification state, asset checks and seller history are shown
- * above the fold — a blocking check is a banner, not a footnote.
+ * Built to the design system's own Product Detail layout: a gallery with a
+ * thumbnail strip and a sticky 300px buy rail, then stacked sections for
+ * specs, verification and provenance. The pd-* classes come from that page.
+ *
+ * The screen does one job: let a buyer decide whether to trust the item and
+ * the person. A blocking check is a banner, not a footnote.
  */
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import * as React from "react";
 import { ApiError, api, ago, inr, listingStatusClass, listingStatusLabel } from "@/lib/api";
 import { CONDITION_LABEL } from "@/lib/types";
-import type { AssetCheck, Condition, IMEIResult, Listing, RCResult } from "@/lib/types";
+import type { AssetCheck, Category, Condition, IMEIResult, Listing, RCResult } from "@/lib/types";
 import { useSession } from "@/lib/session";
 import { ListingCard } from "@/components/listing-card";
-import {
-  Avatar, Banner, Button, Card, Empty, Note, Page, Spinner, Stars, Status, Verified,
-} from "@/components/ui";
+import { Icon } from "@/components/icon";
+import { Avatar, Banner, Button, Empty, Note, Page, Spinner, Stars, Status, Verified, cx } from "@/components/ui";
 
 export default function ListingPage() {
   const { id } = useParams<{ id: string }>();
@@ -27,6 +29,7 @@ export default function ListingPage() {
   const [data, setData] = React.useState<{
     listing: Listing; checks: AssetCheck[]; similar: Listing[];
   } | null>(null);
+  const [categories, setCategories] = React.useState<Category[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [shot, setShot] = React.useState(0);
   const [busy, setBusy] = React.useState(false);
@@ -40,6 +43,10 @@ export default function ListingPage() {
       .finally(() => { if (live) setLoading(false); });
     return () => { live = false; };
   }, [id]);
+
+  React.useEffect(() => {
+    void api.categories().then((r) => setCategories(r.categories)).catch(() => {});
+  }, []);
 
   async function contact() {
     if (!user) return router.push(`/login?next=/i/${id}`);
@@ -70,143 +77,187 @@ export default function ListingPage() {
   const blocking = checks.find((c) => c.blocking);
   const isMine = user?.id === listing.seller_id;
   const available = listing.status === "live";
+  const category = categories.find((c) => c.id === listing.category_id);
 
   return (
-    <Page width="app">
+    <Page width="app" className="pd-wrap">
       {blocking && (
         <Banner tone="danger">
-          <strong>This listing failed a verification check.</strong>{" "}
-          {describeBlocking(blocking)} It cannot be bought through PAKKA.
+          <span className="ic"><Icon name="info" size={16} /></span>
+          <span>
+            <b>This listing failed a verification check.</b>{" "}
+            {describeBlocking(blocking)} It cannot be bought through PAKKA.
+          </span>
         </Banner>
       )}
 
-      <div className="cs-grid-2">
-        {/* ── gallery ─────────────────────────────────────────────────── */}
+      <div className="pd-top">
+        {/* ── gallery ───────────────────────────────────────────────────── */}
         <div>
-          <div className="pl-card-media">
-            {photos.length > 0
-              ? <img src={photos[shot]?.url} alt={photos[shot]?.angle ?? listing.title} />
-              : <div className="pl-ph" aria-hidden />}
+          <div className="pd-media">
+            <div className="pd-badges">
+              <Status statusClass={listingStatusClass[listing.status]}>
+                {listingStatusLabel[listing.status]}
+              </Status>
+              {/* .cat is scoped to .pl-sellcard-media in the DS; outside a
+                  sell card the badge component is .pl-pill. */}
+              {category && (
+                <span className="pl-pill" style={{ ["--cat" as string]: category.colour }}>
+                  <span className="sw" style={{ background: category.colour }} aria-hidden />
+                  {category.label}
+                </span>
+              )}
+            </div>
+
+            <div className="pd-stage">
+              {photos.length > 0
+                ? <img src={photos[shot]?.url} alt={photos[shot]?.angle ?? listing.title} />
+                : <div className="pl-ph" aria-hidden><Icon name="box" size={40} /></div>}
+            </div>
+
+            {photos.length > 1 && (
+              <div className="pd-thumbs">
+                {photos.map((p, i) => (
+                  <button
+                    key={p.id}
+                    className={cx("pd-thumb", i === shot && "is-active")}
+                    onClick={() => setShot(i)}
+                    aria-label={p.angle ?? `Photo ${i + 1}`}
+                    aria-current={i === shot}
+                  >
+                    {p.url ? <img src={p.url} alt="" /> : <Icon name="box" size={18} />}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          {photos.length > 1 && (
-            <div className="mc-chiprow" style={{ marginTop: 8 }}>
-              {photos.map((p, i) => (
-                <button
-                  key={p.id}
-                  className={`pl-chip ${i === shot ? "is-active" : ""}`}
-                  onClick={() => setShot(i)}
-                  aria-label={p.angle ?? `Photo ${i + 1}`}
-                  aria-current={i === shot}
-                >
-                  {p.angle ?? i + 1}
-                </button>
-              ))}
-            </div>
+          <section className="pd-sec">
+            <div className="pd-sec-cap">Description</div>
+            <p className="pd-desc">
+              {listing.description || "The seller has not written a description."}
+            </p>
+          </section>
+
+          <section className="pd-sec">
+            <div className="pd-sec-cap">Specifications</div>
+            <dl className="pd-spec">
+              <dt>Condition</dt>
+              <dd>{CONDITION_LABEL[listing.condition as Condition] ?? listing.condition}</dd>
+              <dt>Category</dt>
+              <dd>{category?.label ?? listing.category_id}</dd>
+              <dt>Location</dt>
+              <dd>{listing.city}</dd>
+              <dt>Listed</dt>
+              <dd>{ago(listing.published_at ?? listing.created_at)}</dd>
+            </dl>
+          </section>
+
+          {checks.length > 0 && (
+            <section className="pd-sec">
+              <div className="pd-sec-cap">Verification · government records</div>
+              <div className="pd-prov">
+                {checks.map((c) => (
+                  <div key={c.id} className={cx("pd-prov-row", !c.blocking && "is-now")}>
+                    <span className="pd-prov-dot" aria-hidden />
+                    <div>
+                      <div className="pd-prov-what">{describeCheck(c)}</div>
+                      <div className="pd-prov-who">{c.kind.toUpperCase()} · {c.subject}</div>
+                    </div>
+                    <span className="pd-prov-when">
+                      {c.blocking
+                        ? <span className="pl-status pl-status-stock_out">Blocked</span>
+                        : <span className="pl-status pl-status-available">Clear</span>}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </section>
           )}
         </div>
 
-        {/* ── facts and action ────────────────────────────────────────── */}
-        <div className="stack">
-          <div>
-            <Status statusClass={listingStatusClass[listing.status]}>
-              {listingStatusLabel[listing.status]}
-            </Status>
-            <h1 className="display-m">{listing.title}</h1>
-            <div className="pl-card-price">{inr(listing.price_paise)}</div>
-            <div className="pl-statusline">
-              {CONDITION_LABEL[listing.condition as Condition] ?? listing.condition}
-              {" · "}{listing.city}
-              {" · listed "}{ago(listing.published_at ?? listing.created_at)}
-            </div>
+        {/* ── sticky buy rail ───────────────────────────────────────────── */}
+        <aside className="pd-buy">
+          <h1 className="pd-title">{listing.title}</h1>
+
+          <div className="pd-price">
+            <span className="now">{inr(listing.price_paise)}</span>
           </div>
 
-          {listing.description && <p className="text-2">{listing.description}</p>}
-
-          <ChecksPanel checks={checks} />
-
-          {/* seller trust */}
-          <Card>
-            {/* .dsc-idrow expects .nm and .sub children — that is what carries
-                the type scale, not the wrapper. */}
-            <div className="dsc-idrow">
-              <Avatar name={listing.seller?.name} />
-              <div>
-                <div className="nm">
-                  {listing.seller?.handle
-                    ? <Link href={`/u/${listing.seller.handle}`}>{listing.seller?.name ?? "Seller"}</Link>
-                    : (listing.seller?.name ?? "Seller")}
-                  {listing.seller?.kyc_verified && <Verified />}
-                </div>
-                <div className="sub">
-                  {listing.seller?.deals_done ?? 0} deal
-                  {listing.seller?.deals_done === 1 ? "" : "s"} completed
-                </div>
-                <Stars value={listing.seller?.rating_avg ?? null} />
+          <div className="dsc-idrow">
+            <Avatar name={listing.seller?.name} />
+            <div>
+              <div className="nm">
+                {listing.seller?.handle
+                  ? <Link href={`/u/${listing.seller.handle}`}>{listing.seller?.name ?? "Seller"}</Link>
+                  : (listing.seller?.name ?? "Seller")}
+                {listing.seller?.kyc_verified && <Verified />}
               </div>
+              <div className="sub">
+                {listing.seller?.deals_done ?? 0} deal
+                {listing.seller?.deals_done === 1 ? "" : "s"} completed
+              </div>
+              <Stars value={listing.seller?.rating_avg ?? null} />
             </div>
-          </Card>
+          </div>
 
           {error && <Note tone="danger">{error}</Note>}
 
-          {isMine ? (
-            <Link href="/sell" className="pl-btn pl-btn-secondary pl-btn-block">
-              This is your listing — manage it
-            </Link>
-          ) : available && !blocking ? (
-            <>
+          <div className="pd-buy-actions">
+            {isMine ? (
+              <Link href="/sell" className="pl-btn pl-btn-secondary pl-btn-block">
+                Manage this listing
+              </Link>
+            ) : available && !blocking ? (
               <Button block onClick={contact} disabled={busy}>
                 {busy ? "Starting…" : "Message the seller"}
               </Button>
-              <Note>
-                Agree a price in chat. When you both accept, PAKKA holds the money
-                until you have the item.
-              </Note>
-            </>
-          ) : (
-            <Button block disabled variant="secondary">
-              {blocking ? "Unavailable" : listingStatusLabel[listing.status]}
-            </Button>
-          )}
-        </div>
+            ) : (
+              <Button block disabled variant="secondary">
+                {blocking ? "Unavailable" : listingStatusLabel[listing.status]}
+              </Button>
+            )}
+          </div>
+
+          {/* The reasons to trust this, stated where the decision is made. */}
+          <div className="pd-trust">
+            <div className="pd-trust-row">
+              <Icon name="check" size={14} />
+              Identity verified against government records
+            </div>
+            <div className="pd-trust-row">
+              <Icon name="wallet" size={14} />
+              Your money is held until you have the item
+            </div>
+            <div className="pd-trust-row">
+              <Icon name="eye" size={14} />
+              Condition documented before you commit
+            </div>
+            {checks.length > 0 && (
+              <div className="pd-trust-row">
+                <Icon name="info" size={14} />
+                {checks.length} record{checks.length === 1 ? "" : "s"} checked
+              </div>
+            )}
+          </div>
+        </aside>
       </div>
 
       {similar.length > 0 && (
-        <section style={{ marginTop: 32 }}>
-          <div className="pl-section-rule"><h2>Similar listings</h2></div>
-          <div className="pl-masonry">
-            {similar.map((s) => <ListingCard key={s.id} listing={s} />)}
+        <section className="pd-sec">
+          <div className="pd-sec-cap">Similar listings</div>
+          <div className="pd-rel">
+            {similar.slice(0, 3).map((s) => (
+              <ListingCard
+                key={s.id}
+                listing={s}
+                category={categories.find((c) => c.id === s.category_id)}
+              />
+            ))}
           </div>
         </section>
       )}
     </Page>
-  );
-}
-
-/** Renders the government checks so a buyer can read them without expanding. */
-function ChecksPanel({ checks }: { checks: AssetCheck[] }) {
-  if (!checks.length) return null;
-
-  return (
-    <Card>
-      <h3>Verification</h3>
-      <table className="pl-table">
-        <tbody>
-          {checks.map((c) => (
-            <tr key={c.id}>
-              <th scope="row">{c.kind.toUpperCase()}</th>
-              <td>{describeCheck(c)}</td>
-              <td className="pl-td-num">
-                {c.blocking
-                  ? <span className="pl-status pl-status-stock_out">Blocked</span>
-                  : <span className="pl-status pl-status-available">Clear</span>}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <Note>Checked against government records at the time shown.</Note>
-    </Card>
   );
 }
 
