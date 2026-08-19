@@ -13,7 +13,7 @@ import { ApiError, api } from "@/lib/api";
 import { useRequireAuth, useSession } from "@/lib/session";
 import { Button, Card, Field, Input, Note, Page, Spinner, Verified } from "@/components/ui";
 
-export default function KYCPage() {
+function KYCPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const { user, loading } = useRequireAuth();
@@ -113,5 +113,17 @@ export default function KYCPage() {
         {error && !ref && <Note tone="danger">{error}</Note>}
       </Card>
     </Page>
+  );
+}
+
+/**
+ * useSearchParams() forces client-side rendering, so Next needs an explicit
+ * boundary to prerender the shell around it.
+ */
+export default function KYCPage() {
+  return (
+    <React.Suspense fallback={<Page width="narrow"><Spinner /></Page>}>
+      <KYCPageInner />
+    </React.Suspense>
   );
 }

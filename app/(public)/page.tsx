@@ -13,11 +13,11 @@ import * as React from "react";
 import { api, inr } from "@/lib/api";
 import type { Category, Listing, Stats } from "@/lib/types";
 import { ListingCard } from "@/components/listing-card";
-import { Button, Empty, Input, Page, SkeletonCard, Stat } from "@/components/ui";
+import { Button, Empty, Input, Page, SkeletonCard, Spinner, Stat } from "@/components/ui";
 import { CategoryStrip } from "@/components/category-strip";
 import { FilterBar } from "@/components/filter-bar";
 
-export default function HomePage() {
+function HomePageInner() {
   const params = useSearchParams();
   const router = useRouter();
 
@@ -120,5 +120,17 @@ export default function HomePage() {
         </div>
       )}
     </Page>
+  );
+}
+
+/**
+ * useSearchParams() forces client-side rendering, so Next needs an explicit
+ * boundary to prerender the shell around it.
+ */
+export default function HomePage() {
+  return (
+    <React.Suspense fallback={<Page width="app"><Spinner /></Page>}>
+      <HomePageInner />
+    </React.Suspense>
   );
 }

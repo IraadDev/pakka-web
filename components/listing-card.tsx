@@ -17,11 +17,13 @@ export function ListingCard({
   saved?: boolean;
   onToggleSave?: (id: string, next: boolean) => void;
 }) {
-  const [isSaved, setSaved] = React.useState(!!saved);
+  // `override` holds an optimistic value only while a toggle is in flight;
+  // otherwise the prop is the truth. Deriving beats mirroring the prop into
+  // state and re-syncing it in an effect.
+  const [override, setOverride] = React.useState<boolean | null>(null);
   const [busy, setBusy] = React.useState(false);
+  const isSaved = override ?? !!saved;
   const cover = listing.photos?.[0]?.url;
-
-  React.useEffect(() => setSaved(!!saved), [saved]);
 
   async function toggle(e: React.MouseEvent) {
     // The heart sits inside the card link, so stop it navigating.
@@ -30,14 +32,14 @@ export function ListingCard({
     if (busy) return;
 
     const next = !isSaved;
-    setSaved(next); // optimistic — a heart that lags feels broken
+    setOverride(next); // optimistic — a heart that lags feels broken
     setBusy(true);
     try {
       if (next) await api.save(listing.id);
       else await api.unsave(listing.id);
       onToggleSave?.(listing.id, next);
     } catch {
-      setSaved(!next); // put it back
+      setOverride(null); // failed — fall back to whatever the prop says
     } finally {
       setBusy(false);
     }

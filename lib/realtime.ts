@@ -27,7 +27,13 @@ export type StreamEvent = {
  */
 export function useStream(path: string | null, onEvent: (e: StreamEvent) => void) {
   const handler = React.useRef(onEvent);
-  handler.current = onEvent;
+
+  // Assigned in an effect, not during render: writing a ref while rendering is
+  // a side effect, and under concurrent rendering a discarded render would
+  // leave the ref pointing at a callback that never committed.
+  React.useEffect(() => {
+    handler.current = onEvent;
+  }, [onEvent]);
 
   const [connected, setConnected] = React.useState(false);
 

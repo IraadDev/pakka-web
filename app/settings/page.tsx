@@ -4,7 +4,8 @@
 import Link from "next/link";
 import * as React from "react";
 import { ApiError, api } from "@/lib/api";
-import type { NotificationPrefs, PayoutAccount } from "@/lib/api";
+import type { PayoutAccount } from "@/lib/api";
+import type { NotificationPrefs } from "@/lib/types";
 import { useRequireAuth, useSession } from "@/lib/session";
 import {
   Button, Card, Field, Input, Note, Page, Spinner, Verified,
@@ -14,9 +15,13 @@ export default function SettingsPage() {
   const { user, loading } = useRequireAuth();
   const { refresh } = useSession();
 
-  const [name, setName] = React.useState("");
-  const [city, setCity] = React.useState("");
-  const [handle, setHandle] = React.useState("");
+  // null means "not yet edited" — the stored value shows until the user types.
+  const [nameEdit, setName] = React.useState<string | null>(null);
+  const [cityEdit, setCity] = React.useState<string | null>(null);
+  const [handleEdit, setHandle] = React.useState<string | null>(null);
+  const name = nameEdit ?? user?.name ?? "";
+  const city = cityEdit ?? user?.city ?? "";
+  const handle = handleEdit ?? user?.handle ?? "";
   const [accounts, setAccounts] = React.useState<PayoutAccount[]>([]);
   const [prefs, setPrefs] = React.useState<NotificationPrefs | null>(null);
   const [busy, setBusy] = React.useState(false);
@@ -25,9 +30,6 @@ export default function SettingsPage() {
 
   React.useEffect(() => {
     if (!user) return;
-    setName(user.name ?? "");
-    setCity(user.city ?? "");
-    setHandle(user.handle ?? "");
     void api.payoutAccounts().then((r) => setAccounts(r.accounts)).catch(() => {});
     void api.prefs().then((r) => setPrefs(r.preferences)).catch(() => {});
   }, [user]);

@@ -8,9 +8,9 @@ import * as React from "react";
 import { ApiError, api } from "@/lib/api";
 import { useSession } from "@/lib/session";
 import { OTPInput } from "@/components/otp-input";
-import { Button, Card, Field, Input, Note, Page } from "@/components/ui";
+import { Button, Card, Field, Input, Note, Page, Spinner } from "@/components/ui";
 
-export default function LoginPage() {
+function LoginPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const { signIn, user } = useSession();
@@ -135,5 +135,17 @@ export default function LoginPage() {
         )}
       </Card>
     </Page>
+  );
+}
+
+/**
+ * useSearchParams() forces client-side rendering, so Next needs an explicit
+ * boundary to prerender the shell around it.
+ */
+export default function LoginPage() {
+  return (
+    <React.Suspense fallback={<Page width="narrow"><Spinner /></Page>}>
+      <LoginPageInner />
+    </React.Suspense>
   );
 }

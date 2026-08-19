@@ -35,11 +35,6 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
 
   const load = React.useCallback(async () => {
-    if (!tokens.access()) {
-      setUser(null);
-      setLoading(false);
-      return;
-    }
     try {
       const { user, next } = await api.me();
       setUser(user);
@@ -52,7 +47,15 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  React.useEffect(() => { void load(); }, [load]);
+  React.useEffect(() => {
+    // With no token there is nobody to fetch, so settle immediately rather
+    // than firing a request that is guaranteed to 401.
+    if (!tokens.access()) {
+      setLoading(false);
+      return;
+    }
+    void load();
+  }, [load]);
 
   // The client fires this when a refresh fails, so expiry lands the user on
   // /login once rather than every screen handling 401 itself.
