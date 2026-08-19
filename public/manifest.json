@@ -1,0 +1,10 @@
+{
+  "name": "PAKKA — Verified second-hand",
+  "short_name": "PAKKA",
+  "description": "Buy and sell used goods in India with verified identities and protected payments.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": []
+}

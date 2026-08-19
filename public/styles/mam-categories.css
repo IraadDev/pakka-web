@@ -1,0 +1,231 @@
+/* ============================================================================
+   MY ADULT MONEY · CATEGORY component family
+   Built on the marketplace design-system tokens (pinlink.css).
+   Every tile sets --cat (the category hue); tints derive from it via
+   color-mix so one rule paints all eight categories.
+   ========================================================================== */
+
+/* ---- spec page chrome ---------------------------------------------------- */
+.cs-hero { padding: 56px 0 30px; }
+.cs-hero .display-l { margin: 16px 0 18px; max-width: 14ch; }
+.cs-hero p { max-width: 60ch; color: var(--text-2); font-size: 16px; line-height: 1.6; }
+
+.cs-sec { padding: 40px 0; border-top: 1px solid var(--border); scroll-margin-top: 80px; }
+.cs-sec-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 26px; }
+.cs-sec-head .n { font-family: var(--f-mono); font-size: 12px; color: var(--accent-text); letter-spacing: .12em; }
+.cs-sec-head h2 { font-family: var(--f-display); font-weight: 600; font-size: 23px; margin: 0; letter-spacing: -.01em; }
+.cs-sec-head .desc { margin-left: auto; max-width: 42ch; font-size: 13px; color: var(--text-2); text-align: right; }
+
+.cs-block { margin-bottom: 30px; }
+.cs-cap { font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.cs-cap .pl-chip { text-transform: none; }
+.cs-cap::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+
+.cs-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.cs-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.cs-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+@media (max-width: 1080px) { .cs-grid-4 { grid-template-columns: repeat(2, 1fr); } .cs-grid-3 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 680px)  { .cs-grid-4, .cs-grid-3, .cs-grid-2 { grid-template-columns: 1fr; } }
+
+/* swatch helpers shared by glyph chip */
+.cat-glyph { color: var(--cat); display: grid; place-items: center; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   TAXONOMY LEGEND — reference list of all 8 categories
+   ════════════════════════════════════════════════════════════════════════ */
+.cs-legend { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px 28px; }
+@media (max-width: 760px) { .cs-legend { grid-template-columns: 1fr; } }
+.cs-legrow {
+  --cat: #888;
+  display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 14px;
+  padding: 11px 6px; border-bottom: 1px solid var(--border);
+}
+.cs-legrow .gl {
+  width: 34px; height: 34px; border-radius: var(--r-sm); display: grid; place-items: center;
+  color: var(--cat); background: color-mix(in srgb, var(--cat) 13%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--cat) 36%, transparent);
+}
+.cs-legrow .nm { font-family: var(--f-display); font-weight: 600; font-size: 14.5px; }
+.cs-legrow .sl { font-family: var(--f-mono); font-size: 10.5px; color: var(--text-3); letter-spacing: .04em; margin-top: 1px; }
+.cs-legrow .hex { font-family: var(--f-mono); font-size: 11px; color: var(--text-2); letter-spacing: .04em; display: flex; align-items: center; gap: 8px; }
+.cs-legrow .hex .dot { width: 11px; height: 11px; border-radius: 3px; background: var(--cat); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   DIRECTION A — "Crosshair Tile"  (terminal / provenance)
+   ════════════════════════════════════════════════════════════════════════ */
+.mc-a {
+  --cat: #888;
+  position: relative; display: block; text-align: left;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md);
+  padding: 18px 18px 16px; overflow: hidden;
+  transition: border-color .18s, transform .18s, box-shadow .18s, background .18s;
+}
+.mc-a::before { /* top hue rule */
+  content: ""; position: absolute; top: 0; left: 0; width: 46px; height: 2px; background: var(--cat);
+  transition: width .25s cubic-bezier(.22,1,.36,1);
+}
+.mc-a .gl {
+  width: 46px; height: 46px; border-radius: var(--r-sm); display: grid; place-items: center;
+  color: var(--cat); background: color-mix(in srgb, var(--cat) 13%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--cat) 32%, transparent);
+  margin-bottom: 16px; transition: background .18s, border-color .18s;
+}
+.mc-a .nm { font-family: var(--f-display); font-weight: 600; font-size: 17px; letter-spacing: -.01em; }
+.mc-a .tag { font-family: var(--f-mono); font-size: 9.5px; letter-spacing: .14em; color: var(--text-3); text-transform: uppercase; margin-top: 5px; }
+.mc-a .foot { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 16px; }
+.mc-a .cnt { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.mc-a .cnt b { font-family: var(--f-display); font-weight: 500; font-size: 22px; color: var(--text); letter-spacing: -.01em; }
+.mc-a .cnt span { font-size: 10.5px; color: var(--text-3); letter-spacing: .1em; text-transform: uppercase; margin-left: 6px; }
+.mc-a .go {
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--cat);
+  opacity: 0; transform: translateX(-4px); transition: opacity .18s, transform .18s;
+}
+.mc-a .go::before { content: "["; color: var(--text-3); }
+.mc-a .go::after { content: "]"; color: var(--text-3); }
+/* crosshair corner ticks */
+.mc-a .tick { position: absolute; width: 7px; height: 7px; pointer-events: none; opacity: 0; transition: opacity .18s;
+  background:
+    linear-gradient(var(--cat),var(--cat)) 50% 0/1px 100% no-repeat,
+    linear-gradient(var(--cat),var(--cat)) 0 50%/100% 1px no-repeat; }
+.mc-a .tick.tr { top: 7px; right: 7px; }
+.mc-a .tick.bl { bottom: 7px; left: 7px; }
+.mc-a:hover { border-color: color-mix(in srgb, var(--cat) 55%, var(--border)); transform: translateY(-3px); box-shadow: 0 18px 36px -26px color-mix(in srgb, var(--cat) 80%, #000); }
+.mc-a:hover::before { width: 100%; opacity: .9; }
+.mc-a:hover .gl { background: color-mix(in srgb, var(--cat) 20%, var(--surface)); border-color: color-mix(in srgb, var(--cat) 50%, transparent); }
+.mc-a:hover .go { opacity: 1; transform: none; }
+.mc-a:hover .tick { opacity: .8; }
+.mc-a.is-active { border-color: var(--cat); box-shadow: inset 0 0 0 1px var(--cat); background: color-mix(in srgb, var(--cat) 7%, var(--surface)); }
+.mc-a.is-active::before { width: 100%; }
+.mc-a.is-active .gl { background: var(--cat); color: #0a0a0a; border-color: var(--cat); }
+.mc-a.is-active .go { opacity: 1; transform: none; }
+.mc-a:focus-visible { outline: none; border-color: var(--cat); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat) 38%, transparent); }
+.mc-a.is-empty { opacity: .55; }
+.mc-a.is-empty .gl { color: var(--text-3); background: var(--surface-2); border-color: var(--border); }
+.mc-a.is-empty::before { background: var(--text-3); opacity: .4; }
+.mc-a.is-empty .cnt b { color: var(--text-3); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   DIRECTION B — "Color Spine"
+   ════════════════════════════════════════════════════════════════════════ */
+.mc-b {
+  --cat: #888;
+  position: relative; display: flex; align-items: center; gap: 15px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-md);
+  padding: 16px 18px 16px 20px; overflow: hidden;
+  transition: border-color .18s, background .18s;
+}
+.mc-b::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 5px; background: var(--cat); transition: width .2s; }
+.mc-b .gl { width: 40px; height: 40px; flex: none; color: var(--cat); display: grid; place-items: center; }
+.mc-b .main { min-width: 0; flex: 1; }
+.mc-b .nm { font-family: var(--f-display); font-weight: 600; font-size: 16px; }
+.mc-b .tag { font-family: var(--f-mono); font-size: 10px; letter-spacing: .08em; color: var(--text-3); margin-top: 2px; }
+.mc-b .cnt { text-align: right; flex: none; }
+.mc-b .cnt b { font-family: var(--f-display); font-weight: 500; font-size: 20px; font-variant-numeric: tabular-nums; }
+.mc-b .cnt span { display: block; font-family: var(--f-mono); font-size: 9.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-top: 2px; }
+.mc-b:hover { border-color: color-mix(in srgb, var(--cat) 45%, var(--border)); background: var(--surface-hover); }
+.mc-b:hover::before { width: 8px; }
+.mc-b.is-active { border-color: color-mix(in srgb, var(--cat) 60%, var(--border)); background: color-mix(in srgb, var(--cat) 9%, var(--surface)); }
+.mc-b.is-active::before { width: 8px; }
+.mc-b:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat) 38%, transparent); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   DIRECTION C — "Disc Tile" (marketing browse hero)
+   ════════════════════════════════════════════════════════════════════════ */
+.mc-c {
+  --cat: #888;
+  position: relative; display: flex; flex-direction: column; align-items: center; text-align: center;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg);
+  padding: 26px 18px 22px; overflow: hidden;
+  transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+.mc-c::after { /* radial wash */
+  content: ""; position: absolute; top: -30%; left: 50%; transform: translateX(-50%);
+  width: 180px; height: 150px; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--cat) 30%, transparent), transparent 68%);
+  opacity: .5; transition: opacity .2s; pointer-events: none;
+}
+.mc-c .disc {
+  position: relative; z-index: 1; width: 66px; height: 66px; border-radius: 50%;
+  display: grid; place-items: center; color: var(--cat); margin-bottom: 16px;
+  background: color-mix(in srgb, var(--cat) 14%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--cat) 38%, transparent);
+  transition: background .2s, color .2s, border-color .2s, box-shadow .2s;
+}
+.mc-c .nm { position: relative; z-index: 1; font-family: var(--f-display); font-weight: 600; font-size: 17px; }
+.mc-c .blurb { position: relative; z-index: 1; font-size: 12px; color: var(--text-3); margin-top: 4px; min-height: 2.7em; display: flex; align-items: flex-start; justify-content: center; }
+.mc-c .cntpill {
+  position: relative; z-index: 1; margin-top: 14px;
+  font-family: var(--f-mono); font-size: 11px; letter-spacing: .04em; font-variant-numeric: tabular-nums;
+  padding: 5px 12px; border-radius: var(--r-pill);
+  color: color-mix(in srgb, var(--cat) 75%, var(--text)); background: color-mix(in srgb, var(--cat) 12%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+}
+.mc-c:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--cat) 45%, var(--border)); box-shadow: 0 24px 48px -30px color-mix(in srgb, var(--cat) 90%, #000); }
+.mc-c:hover::after { opacity: .9; }
+.mc-c:hover .disc { box-shadow: 0 0 30px -8px color-mix(in srgb, var(--cat) 70%, transparent); }
+.mc-c.is-active .disc { background: var(--cat); color: #0a0a0a; border-color: var(--cat); }
+.mc-c.is-active { border-color: color-mix(in srgb, var(--cat) 55%, var(--border)); }
+.mc-c.is-active::after { opacity: 1; }
+.mc-c:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat) 38%, transparent); }
+
+/* ════════════════════════════════════════════════════════════════════════
+   DIRECTION D — "Data Row" (dense / dashboard)
+   ════════════════════════════════════════════════════════════════════════ */
+.mc-d {
+  --cat: #888;
+  position: relative; display: flex; align-items: center; gap: 14px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-sm);
+  padding: 12px 14px; transition: border-color .15s, background .15s;
+}
+.mc-d + .mc-d { margin-top: 8px; }
+.mc-d .gl {
+  width: 38px; height: 38px; flex: none; border-radius: var(--r-sm); display: grid; place-items: center;
+  color: var(--cat); background: color-mix(in srgb, var(--cat) 13%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--cat) 30%, transparent);
+}
+.mc-d .id { width: 170px; flex: none; min-width: 0; }
+.mc-d .id .nm { font-family: var(--f-display); font-weight: 600; font-size: 14px; }
+.mc-d .id .sl { font-family: var(--f-mono); font-size: 10px; color: var(--text-3); letter-spacing: .04em; margin-top: 1px; }
+.mc-d .bar { flex: 1; min-width: 60px; }
+.mc-d .bar .track { height: 6px; border-radius: 999px; background: var(--surface-3); overflow: hidden; }
+.mc-d .bar .fill { height: 100%; border-radius: 999px; background: var(--cat); }
+.mc-d .bar .lbl { font-family: var(--f-mono); font-size: 9.5px; color: var(--text-3); letter-spacing: .08em; margin-top: 5px; text-transform: uppercase; }
+.mc-d .cnt { width: 84px; flex: none; text-align: right; font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.mc-d .cnt b { font-family: var(--f-display); font-weight: 500; font-size: 17px; color: var(--text); }
+.mc-d .cnt span { display: block; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-top: 1px; }
+.mc-d .chev { flex: none; color: var(--text-3); display: grid; place-items: center; }
+.mc-d:hover { border-color: color-mix(in srgb, var(--cat) 40%, var(--border)); background: var(--row-hover); }
+.mc-d:hover .chev { color: var(--cat); }
+.mc-d.is-active { border-color: color-mix(in srgb, var(--cat) 55%, var(--border)); background: color-mix(in srgb, var(--cat) 8%, var(--surface)); }
+.mc-d:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat) 38%, transparent); }
+
+/* ---- forced "hover" visual for the spec sheet (static demo) ------------- */
+.mc-a.is-hover { border-color: color-mix(in srgb, var(--cat) 55%, var(--border)); transform: translateY(-3px); box-shadow: 0 18px 36px -26px color-mix(in srgb, var(--cat) 80%, #000); }
+.mc-a.is-hover::before { width: 100%; opacity: .9; }
+.mc-a.is-hover .gl { background: color-mix(in srgb, var(--cat) 20%, var(--surface)); border-color: color-mix(in srgb, var(--cat) 50%, transparent); }
+.mc-a.is-hover .go { opacity: 1; transform: none; }
+.mc-a.is-hover .tick { opacity: .8; }
+.mc-a.is-focus { border-color: var(--cat); box-shadow: 0 0 0 3px color-mix(in srgb, var(--cat) 38%, transparent); }
+
+/* ---- state-label chip under demo tiles ---------------------------------- */
+.cs-statecap { font-family: var(--f-mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--text-3); margin-top: 10px; text-align: center; }
+
+/* ---- filter chip row (bonus: selectable category chips) ------------------ */
+.mc-chiprow { display: flex; flex-wrap: wrap; gap: 9px; }
+.mc-chip {
+  --cat: #888;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--f-mono); font-size: 12px; letter-spacing: .02em;
+  padding: 7px 13px 7px 10px; border-radius: var(--r-pill);
+  background: var(--surface-2); border: 1px solid var(--border-2); color: var(--text-2);
+  transition: background .15s, border-color .15s, color .15s;
+}
+.mc-chip .sw { width: 9px; height: 9px; border-radius: 3px; background: var(--cat); flex: none; }
+.mc-chip .ct { font-variant-numeric: tabular-nums; color: var(--text-3); }
+.mc-chip:hover { color: var(--text); border-color: color-mix(in srgb, var(--cat) 50%, var(--border-2)); }
+.mc-chip.is-active {
+  color: color-mix(in srgb, var(--cat) 80%, var(--text));
+  background: color-mix(in srgb, var(--cat) 14%, var(--surface));
+  border-color: color-mix(in srgb, var(--cat) 50%, transparent);
+}
+.mc-chip.is-active .ct { color: color-mix(in srgb, var(--cat) 65%, var(--text-2)); }

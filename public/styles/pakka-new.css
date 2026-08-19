@@ -1,0 +1,336 @@
+/*
+ * PAKKA — the four components the design system does not yet have.
+ *
+ * The build spec (A6) identified exactly these as needing new work: OTP entry,
+ * signature pad, guided camera capture and photo compare. Everything else on
+ * every screen reuses pinlink.css unchanged.
+ *
+ * These are written in the design system's own idiom — same tokens, same
+ * radii, same borders — so they can be folded back into pinlink.css verbatim
+ * once they have earned their place there.
+ */
+
+/* ── OTP entry (FR-1.1 login, FR-3.5 handover) ─────────────────────────────── */
+
+.pl-otp {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.pl-otp-cell {
+  width: 46px;
+  height: 54px;
+  padding: 0;
+  text-align: center;
+  font-family: var(--f-mono);
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  caret-color: var(--accent-text);
+}
+
+.pl-otp-cell:focus {
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+  outline: none;
+}
+
+.pl-otp.is-error .pl-otp-cell {
+  border-color: var(--danger);
+  background: var(--danger-soft);
+}
+
+@media (max-width: 420px) {
+  .pl-otp { gap: 6px; }
+  .pl-otp-cell { width: 100%; height: 50px; font-size: 19px; }
+}
+
+/* Big, monospaced code for the buyer to show the seller at handover. It is
+   read aloud or held up to another phone, so legibility beats subtlety. */
+.pl-otp-display {
+  font-family: var(--f-mono);
+  font-size: 40px;
+  letter-spacing: .22em;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  padding: 22px 10px;
+  border: 1px dashed var(--border-2);
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  color: var(--text);
+  /* The digits are the point; stop a long-press turning it into a selection. */
+  user-select: all;
+}
+
+/* ── signature pad (FR-3.3) ────────────────────────────────────────────────── */
+
+.pl-signature {
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  position: relative;
+  overflow: hidden;
+}
+
+.pl-signature canvas {
+  display: block;
+  width: 100%;
+  height: 160px;
+  touch-action: none; /* a finger drawing must not scroll the page */
+  cursor: crosshair;
+}
+
+.pl-signature-hint {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+}
+
+.pl-signature.is-signed .pl-signature-hint { display: none; }
+
+.pl-signature-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+}
+
+/* ── guided camera capture (FR-2.2, FR-3.7) ────────────────────────────────── */
+
+.pl-camera {
+  display: grid;
+  gap: 12px;
+}
+
+.pl-camera-angles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 10px;
+}
+
+.pl-camera-slot {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border: 1px dashed var(--border-2);
+  border-radius: var(--r-sm);
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+}
+
+.pl-camera-slot:hover { border-color: var(--accent-line); }
+
+.pl-camera-slot.is-done {
+  border-style: solid;
+  border-color: var(--verified, var(--accent-line));
+}
+
+.pl-camera-slot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pl-camera-slot .lbl {
+  position: relative;
+  z-index: 1;
+  font-family: var(--f-mono);
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  text-align: center;
+  padding: 0 6px;
+}
+
+.pl-camera-slot.is-done .lbl {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 4px 6px;
+  background: color-mix(in srgb, var(--bg-deep) 78%, transparent);
+  color: var(--text-2);
+}
+
+/* Required angles are marked, because a listing missing the odometer or the
+   serial plate is the one buyers do not trust. */
+.pl-camera-slot .req {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  z-index: 1;
+  font-family: var(--f-mono);
+  font-size: 8.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--warn);
+}
+
+.pl-camera-slot.is-done .req { display: none; }
+
+/* ── photo compare (dispute review) ────────────────────────────────────────── */
+
+.pl-compare {
+  position: relative;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--surface-2);
+  aspect-ratio: 4 / 3;
+  user-select: none;
+}
+
+.pl-compare img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* The "after" image is revealed by clipping, so the two stay pixel-aligned. */
+.pl-compare .after {
+  clip-path: inset(0 0 0 var(--split, 50%));
+}
+
+.pl-compare-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--split, 50%);
+  width: 2px;
+  background: var(--accent);
+  cursor: ew-resize;
+  z-index: 2;
+}
+
+.pl-compare-handle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30px;
+  height: 30px;
+  transform: translate(-50%, -50%);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--bg-deep);
+}
+
+.pl-compare-tag {
+  position: absolute;
+  top: 8px;
+  z-index: 3;
+  font-family: var(--f-mono);
+  font-size: 9.5px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: var(--r-xs);
+  background: color-mix(in srgb, var(--bg-deep) 80%, transparent);
+  color: var(--text-2);
+}
+
+.pl-compare-tag.bl { left: 8px; }
+.pl-compare-tag.br { right: 8px; }
+
+/* ── deal timeline ─────────────────────────────────────────────────────────── */
+/* The audit log rendered for humans. Reuses the DS palette; the only new part
+   is the rail, which no existing component draws. */
+
+.pl-timeline {
+  display: grid;
+  gap: 0;
+  position: relative;
+  padding-left: 22px;
+}
+
+.pl-timeline::before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 6px;
+  bottom: 6px;
+  width: 1px;
+  background: var(--border-2);
+}
+
+.pl-timeline-item {
+  position: relative;
+  padding: 8px 0;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.pl-timeline-item::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 14px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border-2);
+}
+
+.pl-timeline-item.is-done::before {
+  background: var(--verified, var(--accent));
+  border-color: var(--verified, var(--accent));
+}
+
+.pl-timeline-item.is-now::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.pl-timeline-item .when {
+  font-family: var(--f-mono);
+  font-size: 10.5px;
+  letter-spacing: .04em;
+  color: var(--text-3);
+  margin-left: 8px;
+}
+
+/* ── holdback meter (FR-4.1) ───────────────────────────────────────────────── */
+
+.pl-holdback {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--warn-soft);
+  border-radius: var(--r-sm);
+  background: var(--warn-soft);
+}
+
+.pl-holdback .amt {
+  font-family: var(--f-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--warn);
+}
+
+/* ── width tier: wide ──────────────────────────────────────────────────────── */
+/* The design system defines --w-wide (1440px, "dense grids, feeds, tables")
+   but ships no .page-wide to go with the other four tiers. The browse feed is
+   exactly the case that token describes, so the class is completed here in the
+   same shape as its siblings. */
+
+.page-wide { max-width: var(--w-wide); margin-inline: auto; padding-inline: 24px; }
