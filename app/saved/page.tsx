@@ -45,9 +45,11 @@ export default function SavedPage() {
           <div className="stack">
             {saved.map((w) => (
               <Link key={w.id} href={`/i/${w.listing_id}`} className="pl-sellrow">
-                {w.photo_url
-                  ? <img className="pl-sellrow-thumb" src={w.photo_url} alt="" />
-                  : <div className="pl-sellrow-thumb pl-ph" aria-hidden />}
+                <div className="pl-sellrow-thumb">
+                  {w.photo_url
+                    ? <img src={w.photo_url} alt="" />
+                    : <div className="pl-ph" aria-hidden />}
+                </div>
                 <div className="pl-sellrow-main">
                   <div className="pl-sellrow-title">{w.title}</div>
                   <div className="pl-sellrow-sub">{w.status}</div>

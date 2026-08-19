@@ -127,16 +127,18 @@ export default function ListingPage() {
 
           {/* seller trust */}
           <Card>
+            {/* .dsc-idrow expects .nm and .sub children — that is what carries
+                the type scale, not the wrapper. */}
             <div className="dsc-idrow">
               <Avatar name={listing.seller?.name} />
               <div>
-                <div>
+                <div className="nm">
                   {listing.seller?.handle
                     ? <Link href={`/u/${listing.seller.handle}`}>{listing.seller?.name ?? "Seller"}</Link>
                     : (listing.seller?.name ?? "Seller")}
                   {listing.seller?.kyc_verified && <Verified />}
                 </div>
-                <div className="pl-statusline">
+                <div className="sub">
                   {listing.seller?.deals_done ?? 0} deal
                   {listing.seller?.deals_done === 1 ? "" : "s"} completed
                 </div>

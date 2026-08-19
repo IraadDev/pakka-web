@@ -66,7 +66,7 @@ function HomePageInner() {
   return (
     <Page width="wide">
       {!hasFilters && (
-        <section className="pl-page">
+        <section>
           <h1 className="display-l">Buy and sell used, without the risk.</h1>
           <p className="text-2">
             Verified identities on both sides. Condition documented before you commit.

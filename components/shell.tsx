@@ -50,7 +50,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div className="pl-shell">
+    // Not .pl-shell: that applies its own max-width and padding, which would
+    // constrain and double-pad the page width tier nested inside it. Each page
+    // picks its own tier (page-wide / app / form / read / narrow).
+    <div>
       <header className="fh-top">
         <div className="fh-top-inner">
           <Link href="/" className="pl-brand" aria-label="PAKKA home">

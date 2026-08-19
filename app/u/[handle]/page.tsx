@@ -44,10 +44,10 @@ export default function StorefrontPage() {
         <div className="dsc-idrow">
           <Avatar name={user.name} />
           <div>
-            <h1 className="display-m">
+            <h1 className="display-m nm">
               {user.name ?? handle} {user.kyc_verified && <Verified />}
             </h1>
-            <div className="pl-statusline">
+            <div className="sub">
               {user.city && `${user.city} · `}member since {ago(user.member_since)}
             </div>
             <Stars value={summary?.average ?? user.rating_avg} count={summary?.count} />

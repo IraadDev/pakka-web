@@ -142,15 +142,22 @@ export function Note({ tone, children }: { tone?: "danger" | "warn" | "ok"; chil
   return <span className={cx("pl-note", tone && `is-${tone}`)}>{children}</span>;
 }
 
-/** Star rating, read-only. */
+/**
+ * Star rating, read-only.
+ *
+ * The empty state is plain inline text, not a .pl-note — a note is a padded,
+ * bordered box, which wrecks the line height inside a tight identity row.
+ * `.n` is the DS's own count slot within .dsc-stars.
+ */
 export function Stars({ value, count }: { value: number | null; count?: number }) {
-  if (value == null) return <span className="pl-note">No ratings yet</span>;
+  if (value == null) return <span className="sub">No ratings yet</span>;
+
   const full = Math.round(value);
   return (
     <span className="dsc-stars" title={`${value.toFixed(1)} out of 5`}>
       {"★★★★★".slice(0, full)}
       <span className="off">{"★★★★★".slice(full)}</span>
-      {count != null && <span className="cnt"> ({count})</span>}
+      {count != null && <span className="n">({count})</span>}
     </span>
   );
 }

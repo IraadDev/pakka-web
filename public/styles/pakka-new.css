@@ -334,3 +334,33 @@
    same shape as its siblings. */
 
 .page-wide { max-width: var(--w-wide); margin-inline: auto; padding-inline: 24px; }
+
+/* ── layout primitives ─────────────────────────────────────────────────────── */
+/* The design system has width tiers and grids but no vertical stack, so every
+   screen was reaching for one. Defined here rather than repeated inline. */
+
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.stack > * { min-width: 0; }
+
+/* A list of conversations. .dsc-conv styles each row; the DS has no wrapper
+   to space them. */
+.dsc-conv-list { display: flex; flex-direction: column; gap: 8px; }
+
+/* Unstyled list for plain bullet copy in cards and callouts. */
+ul.clean { margin: 0 0 14px; padding-left: 18px; color: var(--text-2); }
+ul.clean li { margin-bottom: 6px; }
+
+/* ── note tones ────────────────────────────────────────────────────────────── */
+/* .pl-banner has is-info / is-ok / is-warn / is-danger; .pl-note ships with
+   only the neutral form. Inline validation needs the same vocabulary, so the
+   tones are extended to it using the same tokens. */
+
+.pl-note.is-ok     { border-color: var(--accent-line); color: var(--accent-text); background: var(--accent-soft); }
+.pl-note.is-warn   { border-color: var(--warn);        color: var(--warn);        background: var(--warn-soft); }
+.pl-note.is-danger { border-color: var(--danger);      color: var(--danger);      background: var(--danger-soft); }
+
+/* .nm and .sub are defined by the DS only as children of .dsc-idrow. They read
+   as a general identity/caption pair, so they are promoted to standalone use
+   with the same values. */
+.nm  { font-family: var(--f-display); font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 6px; }
+.sub { font-family: var(--f-mono); font-size: 10.5px; color: var(--text-3); letter-spacing: .04em; }

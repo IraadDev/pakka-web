@@ -10,6 +10,22 @@ import { api, inrShort, ago, listingStatusClass, listingStatusLabel } from "@/li
 import type { Listing } from "@/lib/types";
 import { Avatar, Verified, cx } from "./ui";
 
+/**
+ * Height for a photoless card's placeholder.
+ *
+ * `.pl-ph` carries a background but no intrinsic size — the design system's own
+ * feed sets the height inline, because a masonry column wants varied heights
+ * rather than a grid of identical boxes. Derived from the listing id so it is
+ * stable across renders and identical on server and client; a random height
+ * would flicker and break hydration.
+ */
+function placeholderHeight(id: string): number {
+  const steps = [150, 180, 210, 240, 270];
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) hash = (hash * 31 + id.charCodeAt(i)) >>> 0;
+  return steps[hash % steps.length];
+}
+
 export function ListingCard({
   listing, saved, onToggleSave,
 }: {
@@ -50,7 +66,7 @@ export function ListingCard({
       <div className="pl-sellcard-media">
         {cover
           ? <img src={cover} alt="" loading="lazy" />
-          : <div className="pl-ph" aria-hidden />}
+          : <div className="pl-ph" style={{ height: placeholderHeight(listing.id) }} aria-hidden />}
         <span className="cat">
           <span className="sw" style={{ background: `var(--cat, var(--accent))` }} aria-hidden />
           {listing.category_id.replace(/_/g, " ")}
@@ -89,9 +105,12 @@ export function ListingRow({ listing, href }: { listing: Listing; href?: string 
   const cover = listing.photos?.[0]?.url;
   return (
     <Link href={href ?? `/i/${listing.id}`} className="pl-sellrow">
-      {cover
-        ? <img className="pl-sellrow-thumb" src={cover} alt="" loading="lazy" />
-        : <div className="pl-sellrow-thumb pl-ph" aria-hidden />}
+      {/* The DS sizes .pl-sellrow-thumb and expects .pl-ph nested inside it. */}
+      <div className="pl-sellrow-thumb">
+        {cover
+          ? <img src={cover} alt="" loading="lazy" />
+          : <div className="pl-ph" aria-hidden />}
+      </div>
 
       <div className="pl-sellrow-main">
         <div className="pl-sellrow-title">{listing.title}</div>
